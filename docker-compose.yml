@@ -1,0 +1,44 @@
+version: "3.9"
+
+services:
+  db:
+    container_name: practice_db
+    build:
+      context: .
+      dockerfile: containers/postgres/Dockerfile
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    # ヘルスチェックを使ってPostgresのコンテナより先にFastAPIが起動しないようにする
+    healthcheck:
+      test: pg_isready -U "${POSTGRES_USER:-postgres}" || exit 1
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    env_file:
+      - ./env/.env.local
+    ports:
+      - "5432:5432" # デバッグ用
+    networks:
+      - fastapi_practice_db
+  app:
+    container_name: practice_app
+    build:
+      context: .
+      dockerfile: containers/fastapi/Dockerfile
+    volumes:
+      - ./application:/code
+    ports:
+      - "8000:8000"
+    command: poetry run uvicorn main:app --reload --host 0.0.0.0 --port 8000
+    # envファイルの指定方法はいつか変える
+    env_file:
+      - ./env/.env.local
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - fastapi_practice_db
+volumes:
+  db_data:
+networks:
+  fastapi_practice_db:

@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "fast_api_practice"
+version = "1.0.0"
+description = "テンプレート"
+authors = ["furutahidehiko"]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+fastapi = { version = "^0.103.1", extras = ["all"] }
+uvicorn= "^0.17.6"
+SQLAlchemy = "^2.0.21"
+psycopg2 = "^2.9.9"
+asyncpg = "^0.28.0"
+alembic = "^1.12.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
